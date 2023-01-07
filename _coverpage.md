@@ -1,9 +1,6 @@
 ![logo](./toco.svg)
 
-# 从羽的个人博客
-
-[GitHub](https://github.com/con-yu/con-yu.github.io)
-[Get Started](#README)
+# conyu 的个人博客
 
 <!-- 背景图片 -->
 
