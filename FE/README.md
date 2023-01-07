@@ -1,4 +1,4 @@
-# HTML
+# 📚 HTML
 
 ## H5新特性
 
@@ -165,7 +165,7 @@
 
 
 
-# CSS
+# ✨ CSS
 
 
 
@@ -230,9 +230,7 @@
 
 
 
-
-
-# JavaScript
+# 🐬 JavaScript
 
 ## 数组
 
@@ -1260,7 +1258,7 @@ function getNewId(minId = 0, maxId = 9999, idList = []) {
 
 
 
-# 常用操作
+# 🔎 常用操作
 
 ### Git
 
@@ -1348,7 +1346,7 @@ ssh root@服务器公网ip地址
 
 
 
-# [Vue](https://cn.vuejs.org/)
+# 🎉 [Vue](https://cn.vuejs.org/)
 
 ## [vue-router](https://router.vuejs.org/zh/)
 
@@ -1545,7 +1543,7 @@ const isAllChecked = computed({
 
 
 
-# [React](https://zh-hans.reactjs.org/)
+# 🏹 [React](https://zh-hans.reactjs.org/)
 
 ## [redux](https://cn.redux.js.org/)
 
@@ -2730,7 +2728,7 @@ module.exports = {
 
 
 
-# [Vite](https://vitejs.cn/)
+# 👹 [Vite](https://vitejs.cn/)
 
 > 新一代构建工具
 
@@ -2777,7 +2775,7 @@ export default defineConfig({
 
 
 
-# 工具库
+# 🔨 工具库
 
 ## [ECharts](https://echarts.apache.org/zh/index.html)
 
@@ -3318,7 +3316,7 @@ export const LeftWrapper = styled.div`
 
   
 
-# 思想方法
+# 💡 思想方法
 ## Recursion（递归）
 
 一种函数调用自身的操作。递归被用于处理包含有更小的子问题的一类问题。一个递归函数可以接受两个输入参数：一个最终状态（终止递归）或一个递归状态（继续递归）。
