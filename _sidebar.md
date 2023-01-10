@@ -1,3 +1,2 @@
 - [Motto](/)
-- [Ruan](/ruan/README.md)
 - [website](/web.md)
