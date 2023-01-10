@@ -2,4 +2,4 @@
 
 <!-- 背景图片 -->
 
-![](./img/girl.jpg)
+![](./static/img/bg.jpg)
