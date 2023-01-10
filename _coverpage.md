@@ -2,4 +2,4 @@
 
 <!-- 背景图片 -->
 
-![](./static/img/bg.jpg)
+![](./img/bg.jpg)
