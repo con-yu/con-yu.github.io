@@ -212,6 +212,23 @@
 
 
 
+## 隐藏滚动条
+
+```less
+// 保留y轴滚动功能
+.container {
+    
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome Safari */
+  }
+}
+```
+
+
+
 ## 清除浮动
 
 >⽗级div定义height
@@ -1313,24 +1330,6 @@ git stash pop 将文件从临时空间pop下来
 
 -  [vite配置方法](https://vitejs.cn/vite3-cn/config/)（见下文工具库）
 
-### 简易调用接口
-
-```js
- // 利用axios简易调用接口
-    axios.get('https://api.seniverse.com/v3/weather/daily.json', {
-        // 注意存储query参数的是params对象
-        params: {
-          key: 'SCYrvkytJze9qyzOh',
-          location: 'shenzhen'
-        }
-      })
-      .then(function(response) {
-        console.log(response);
-      })
-      .catch(function(error) {
-        console.log(error);
-      })
-```
 
 
 
@@ -1404,6 +1403,70 @@ onBeforeRouteUpdate((to, from) => {
   // ...
 })
 </script>
+```
+
+
+
+### 动态路由
+
+```ts
+// 组件模块模板
+export default {
+  path: "/main/analysis/overview",
+  component: () =>
+    import(
+      "@/views/main/components/main-container/analysis/overview/overview.vue"
+    )
+}
+```
+
+```ts
+// 映射函数
+import type { RouteRecordRaw } from "vue-router"
+
+function loadLocalRoutes() {
+  const localRoutes: RouteRecordRaw[] = []
+  // 读取router/main中所有ts文件
+  const files: Record<string, any> = import.meta.glob("@/router/main/**/*.ts", {
+    eager: true
+  })
+
+  // 获取并添加所有路由对象
+  for (const key in files) {
+    const module = files[key]
+
+    localRoutes.push(module.default)
+  }
+
+  return localRoutes
+}
+
+export function mapMenusToRoute(userMenus: any[]) {
+  // 加载本地路由
+  const localRoutes = loadLocalRoutes()
+
+  // 根据userMenu匹配有权限的路由
+  const routes: RouteRecordRaw[] = []
+
+  for (const menu of userMenus) {
+    for (const subMenu of menu.children) {
+      // 是否能匹配对应的route
+      const route = localRoutes.find((item) => subMenu.url === item.path)
+
+      // 能匹配上则添加路由
+      route && routes.push(route)
+    }
+  }
+
+  // 返回该用户有权限的路由
+  return routes
+}
+```
+
+```ts
+// 根据用户菜单动态添加路由(一般在获取到登录信息后执行，最后跳转主页)
+const routes = mapMenusToRoute(user.userMenus)
+routes.forEach((route) => router.addRoute("main", route))
 ```
 
 
@@ -1539,7 +1602,22 @@ const isAllChecked = computed({
   })
 ```
 
+## 结合TS
 
+### 为组件模板引用标注类型
+
+```vue
+<!-- App.vue -->
+<script setup lang="ts">
+import MyModal from './MyModal.vue'
+
+const modal = ref<InstanceType<typeof MyModal> | null>(null)
+
+const openModal = () => {
+  modal.value?.open()
+}
+</script>
+```
 
 
 
@@ -2764,7 +2842,7 @@ export default defineConfig({
 
 
 
-## [环境变量](https://vitejs.cn/guide/env-and-mode.html)
+## [环境变量与模式](https://vitejs.cn/guide/env-and-mode.html)
 
 > Vite 在一个特殊的 **import.meta.env** 对象上暴露环境变量。这里有一些在所有情况下都可以使用的内建变量：
 >
@@ -2775,7 +2853,83 @@ export default defineConfig({
 
 
 
+### .env文件
+
+> .env                # 所有情况下都会加载
+> .env.local          # 所有情况下都会加载，但会被 git 忽略
+> .env.[mode]         # 只在指定模式下加载
+> .env.[mode].local   # 只在指定模式下加载，但会被 git 忽略
+
+为了防止意外地将一些环境变量泄漏到客户端，只有以 `VITE_` 为前缀的变量才会暴露给经过 vite 处理的代码。
+
+```
+// .env.development
+VITE_BASE_URL=https://xxxxx:dev
+```
+
+```
+// .env.production
+VITE_BASE_URL=https://xxxxx:prod
+```
+
+如果使用ts的智能提示👇
+
+```ts
+// .env.d.ts
+interface ImportMetaEnv {
+  readonly VITE_APP_TITLE: string
+  // 更多环境变量...
+}
+```
+
+在任意位置访问VITE_BASE_URL
+
+```ts
+console.log(import.meta.env.VITE_BASE_URL)
+```
+
+
+
 # 🔨 工具库
+
+## [Element Plus](https://element-plus.gitee.io/zh-CN/)
+
+### 国际化
+
+```ts
+// main.ts
+// 全局配置
+import ElementPlus from 'element-plus'
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+
+app.use(ElementPlus, {
+  locale: zhCn,
+})
+```
+
+或
+
+```vue
+<template>  
+    <el-config-provider :locale="zhCn">
+      <App/>
+    </el-config-provider>  
+</template>
+
+<script lang="ts" setup>
+// ConfigProvider国际化
+import zhCn from "element-plus/dist/locale/zh-cn.mjs"
+</script>
+```
+
+如果使用ts需额外声明mjs
+
+```ts
+// env.d.ts
+declare module "*mjs"
+```
+
+
 
 ## [ECharts](https://echarts.apache.org/zh/index.html)
 
@@ -2871,8 +3025,7 @@ myChart.resize({
 
 ## [axios](https://axios-http.com/zh/)
 
-
-- 常用配置
+### 常用配置
 
 ```js
 // 1.axios实例
@@ -2888,7 +3041,7 @@ const instance = axios.create({
 // 响应拦截器可对请求函数统一做进一步的处理(提示响应状态信息等)
 ```
 
-- 使用示例
+### 使用示例
 
 ```js
 import axios from "axios"
@@ -2932,8 +3085,6 @@ CyAxios.interceptors.response.use(
 
 export default CyAxios
 ```
-
-
 
 
 
@@ -2990,7 +3141,7 @@ import "nprogress/nprogress.css"
 /* 导入到全局index.js */
 
 #nprogress .bar {
-  background: red !important;
+  background: pink !important;
 }
 
 /* ...... */
@@ -3218,11 +3369,29 @@ console.log(id) // "liBDJ"
 
 
 
+## dayjs
+
+```ts
+// UTC 增加了 .utc .local .isUTC APIs 使用 UTC 模式来解析和展示时间。
+import dayjs from "dayjs"
+import utc from "dayjs/plugin/utc"
+
+dayjs.extend(utc)
+
+export function formatUTCDate(
+  utcString: string,
+  format = "YYYY/MM/DD HH:mm:ss"
+) {
+  const res = dayjs.utc(utcString).utcOffset(8).format(format)
+  return res
+}
+```
+
+
+
 ## [styled-components](https://styled-components.com/docs/basics)
 
 >CSS-in-JS
-
-
 
 ### 语法
 
